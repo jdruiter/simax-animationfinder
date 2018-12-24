@@ -2,7 +2,7 @@
 
 Finds avatar animations corresponding to a sentence. 
 
-Sample data loaded in the database. Ready to go. More info on the begin page.
+Ready to go. Sample data loaded in the database. More info on the begin page:
 
 Begin: localhost:8000/
 
