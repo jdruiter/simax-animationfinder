@@ -1,0 +1,7 @@
+.idea/
+_aantekeningen/
+logs/
+node_modules/
+ENV/
+*.pyc
+*.log
