@@ -6,7 +6,7 @@ urlpatterns = [
     # http://localhost:8000/get-animations/{"sentence": "We saw her duck. She loves ducks."}
     url(r'^get-animations/(.*)', views.get_animations, name='get_animations'),
 
-    # http://localhost:8000/
+    # http://localhost:8000/welcome
     url(r'^$', views.welcome, name='welcome'),
 
 ]

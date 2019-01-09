@@ -1,6 +1,20 @@
 # coding: utf-8
 import re
 
+def safe_unicode(obj):
+    '''
+    Returns the unicode representation of obj;
+    '''
+    try:
+        return unicode(obj)
+    except UnicodeDecodeError:
+        # obj is byte string
+        # 'strict', 'ignore', 'replace', 'xmlcharrefreplace' (htmml equivalent replace)
+        try:
+            unicode(obj.decode('utf-8', 'replace'))
+        except:
+            ascii_text = str(obj).encode('string_escape')
+            return unicode(ascii_text)
 
 
 def clear_interpunction(sentence):
@@ -26,23 +40,6 @@ def select_words_unicode(sentence):
     '''
     If module regex is installed, this function works with unicode letters (better)
     '''
-    # import regex
-    # sentence = regex.sub(ur"\p{P}+", "", sentence).split(' ')
-    # return [s for s in sentence if s]
-    pass
-
-
-def safe_unicode(obj):
-    '''
-    Returns the unicode representation of obj;
-    '''
-    try:
-        return unicode(obj)
-    except UnicodeDecodeError:
-        # obj is byte string
-        # 'strict', 'ignore', 'replace', 'xmlcharrefreplace' (htmml equivalent replace)
-        try:
-            unicode(obj.decode('utf-8', 'replace'))
-        except:
-            ascii_text = str(obj).encode('string_escape')
-            return unicode(ascii_text)
+    import regex
+    sentence = regex.sub(ur"\p{P}+", "", sentence).split(' ')
+    return [s for s in sentence if s]

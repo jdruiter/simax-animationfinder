@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.conf import settings
+from joris.helperfunctions import safe_unicode as u
 from joris.helperfunctions import select_words
-from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse, HttpResponseServerError, HttpResponseBadRequest, JsonResponse
 import json
 
-from animationfinder.models import Item, Animation, Description, Synonym
+from animationfinder.models import Animation, Synonym
 
 
 def welcome(request):
@@ -23,37 +25,23 @@ def get_animations(request, json_sentence=None):
         word1: [Animation1, Animation2, …],
         word2: [Animation10, Animation100, …],
     }
-    http://localhost:8000/get-animations/{"sentence": "test"}
+    http://localhost:8000/get-animations/{"sentence": "ducks"}
     '''
 
     if not json_sentence:
         return render(request, 'animationfinder/explanation.html')
 
-    try:
-        sentence = json.loads(json_sentence)['sentence']
-    except Exception as e:
-        if type(json_sentence) == dict:
-            sentence = json_sentence['sentence'].lowercase()
-        else:
-            return HttpResponseBadRequest("Please check your JSON is well formed")
+    sentence = json.loads(json_sentence)['sentence']
 
-    print sentence
-
-    result = {}
-
-    # alternatives: helperfunctions.select_words_unicode() and clear_interpunction()
+    # parse the sentence
     word_list = select_words(sentence)
 
+    result = {}
     for word in word_list:
-        try:    s = Synonym.objects.get(name__iexact=word)
-        except: continue
 
-        for description in s.description.all():
-            item_list = []
-            for item in description.item.all():
-                print "'{}' matches animation: {}<br>".format(word, str(item.animation.pk))
-                item_list.append(item.animation.pk)
-            result[word] = item_list
+        S = Synonym.objects.filter(name__iexact=word)
+        animations = Animation.objects.filter(synonym__in=S)
+        result[word] = [animation.name for animation in animations]
 
     return JsonResponse(result, safe=False)
 
